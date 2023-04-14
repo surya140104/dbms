@@ -1,8 +1,10 @@
 
 const express=require('express');
 const bodyParser=require("body-parser");
-const oracleDB=require('oracledb');
-// const mySql=require("mysql");
+const dotEnv= require('dotenv');
+// const oracleDB=require('oracledb');
+const sequalize= require('sequelize');
+const mySql=require("mysql");
 // const ejs=require("ejs");
 
 const app=express();
@@ -11,7 +13,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(__dirname+"/"));
 // app.set("views",__dirname+"/views");
 
-// ------------------------------------------------- SQL --------------------------------------------- //
+// ------------------------------------------------- Oracle --------------------------------------------- //
 // let connectionPool;
 // async function run() {
 //     try{
@@ -29,6 +31,26 @@ app.use(express.static(__dirname+"/"));
 
 // run();
 
+
+// ------------------------------------------------- mySQL --------------------------------------------- //
+
+var con = mysql.createConnection({
+    host: process.env.MYSQLHOST,
+    user: process.env.MYSQLUSERNAME,
+    password: process.env.MYSQLPASSWORD,
+    database: process.env.DATABASE,
+    port: process.env.PORT
+});
+
+con.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected!");
+    var sql = "create table dbms( name varchar2(15), rollNo varchar2(9), gender varchar2(7), phoneNo number(10), email varchar2(25), org varchar2(5), subGame varchar2(10) );";
+    con.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log("Table created");
+  });
+});
 
 // ------------------------------------------------- GET REQUESTS --------------------------------------------- //
 
@@ -128,7 +150,7 @@ app.post("/home/:getGroup",(req,res)=>{
 
 // ------------------------------------------------- LISTEN --------------------------------------------- //
 const port=8000;
-app.listen( process.env.PORT || port, ()=>{
+app.listen(port, ()=>{
     console.log("Server started on "+port);
 });
 
